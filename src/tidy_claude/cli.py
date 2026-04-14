@@ -1,12 +1,14 @@
 """Click CLI — thin wrappers around :mod:`tidy_claude.ops`."""
 
+import json
 import sys
 import subprocess
+from pathlib import Path
 
 import click
 from simple_term_menu import TerminalMenu
 
-from .config import BACKUP_DIR, CLAUDE_DIR
+from .config import CLAUDE_DIR, CONFIG_FILE, ensure_config, get_data_dir, load_config, save_config
 from .helpers import format_size
 from .ops import (
     collect_projects,
@@ -56,6 +58,7 @@ def cli(ctx, debug):
     """Backup, restore, and maintain Claude Code configuration."""
     ctx.ensure_object(dict)
     ctx.obj["state"] = RunState(debug=debug)
+    ensure_config()
     if ctx.invoked_subcommand is None:
         ctx.invoke(backup)
 
@@ -90,7 +93,7 @@ def skills(ctx):
 @cli.command()
 def status():
     """Show git status of the backup repo."""
-    subprocess.run(["git", "status", "--short"], cwd=BACKUP_DIR, check=False)
+    subprocess.run(["git", "status", "--short"], cwd=get_data_dir(), check=False)
 
 
 @cli.command()
@@ -117,6 +120,21 @@ def sync_cmd(ctx):
     do_commit(state)
     do_push(state)
     _print_summary(state, "sync")
+
+
+@cli.command()
+@click.option("--data-dir", type=click.Path(), default=None,
+              help="Set the data directory for backups.")
+def init(data_dir):
+    """Show or update tidy-claude configuration."""
+    if data_dir is None:
+        click.echo(f"config: {CONFIG_FILE}")
+        click.echo(json.dumps(load_config(), indent=2))
+    else:
+        config = load_config()
+        config["data_dir"] = str(Path(data_dir).expanduser().resolve())
+        save_config(config)
+        click.echo(f"data_dir set to {config['data_dir']}")
 
 
 @cli.command()

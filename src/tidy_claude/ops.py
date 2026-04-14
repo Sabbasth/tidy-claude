@@ -5,13 +5,11 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
-import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
 
 from .config import (
-    BACKUP_DIR,
     CATEGORY_MAP,
     CLAUDE_DIR,
     CLAUDE_JSON,
@@ -20,6 +18,7 @@ from .config import (
     SETTINGS_JSON,
     SETTINGS_JSON_DEFAULTS,
     SETTINGS_JSON_KEYS,
+    get_data_dir,
 )
 from .helpers import (
     deep_merge,
@@ -36,7 +35,7 @@ from .state import RunState
 
 def _copy_to_backup(state: RunState, src: Path, dst_rel: str, category: str):
     """Copy a file or directory into the backup tree."""
-    dst = BACKUP_DIR / dst_rel
+    dst = get_data_dir() / dst_rel
     changed = diff_files(src, dst)
 
     dst.parent.mkdir(parents=True, exist_ok=True)
@@ -56,7 +55,7 @@ def _copy_to_backup(state: RunState, src: Path, dst_rel: str, category: str):
 
 def _restore_copy(state: RunState, backup_rel: str, target: Path, category: str):
     """Restore a file or directory from backup to its live location."""
-    src = BACKUP_DIR / backup_rel
+    src = get_data_dir() / backup_rel
     if not src.exists():
         state.log(f"  skip  {backup_rel} (not in backup)")
         return
@@ -87,7 +86,7 @@ def _extract_keys_to_file(state: RunState, src: Path, keys: list[str],
     data = json.loads(src.read_text())
     extracted = extract_keys(data, keys, defaults)
 
-    dst = BACKUP_DIR / dst_rel
+    dst = get_data_dir() / dst_rel
     new_content = json.dumps(extracted, indent=2) + "\n"
     changed = not dst.exists() or dst.read_text() != new_content
 
@@ -101,7 +100,7 @@ def _extract_keys_to_file(state: RunState, src: Path, keys: list[str],
 def _merge_keys_from_file(state: RunState, backup_rel: str, target: Path,
                           category: str):
     """Merge backed-up keys into an existing JSON file."""
-    src = BACKUP_DIR / backup_rel
+    src = get_data_dir() / backup_rel
     if not src.exists():
         state.log(f"  skip  {backup_rel} (not in backup)")
         return
@@ -147,7 +146,7 @@ def do_restore(state: RunState):
         _restore_copy(state, f"claude/{name}", CLAUDE_DIR / name,
                       CATEGORY_MAP[name])
 
-    backup_claude = BACKUP_DIR / "claude"
+    backup_claude = get_data_dir() / "claude"
     if backup_claude.exists():
         for md in sorted(backup_claude.glob("*.md")):
             _restore_copy(state, f"claude/{md.name}", CLAUDE_DIR / md.name,
@@ -159,7 +158,7 @@ def do_restore(state: RunState):
 
 
 def do_skills(state: RunState):
-    manifest = BACKUP_DIR / "skills.json"
+    manifest = get_data_dir() / "skills.json"
     if not manifest.exists():
         raise SystemExit("error: skills.json not found in backup repo")
 
@@ -181,7 +180,7 @@ def do_skills(state: RunState):
 def do_pull(state: RunState) -> bool:
     result = subprocess.run(
         ["git", "pull", "--ff-only"],
-        cwd=BACKUP_DIR,
+        cwd=get_data_dir(),
         capture_output=not state.debug,
         check=False,
     )
@@ -193,24 +192,24 @@ def do_pull(state: RunState) -> bool:
 
 
 def do_commit(state: RunState, message: str | None = None):
-    subprocess.run(["git", "add", "-A"], cwd=BACKUP_DIR,
+    subprocess.run(["git", "add", "-A"], cwd=get_data_dir(),
                    capture_output=not state.debug, check=True)
 
     result = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
-        cwd=BACKUP_DIR, check=False,
+        cwd=get_data_dir(), check=False,
     )
     if result.returncode == 0:
         state.log("Nothing to commit.")
         return
 
     msg = message or "backup claude config"
-    subprocess.run(["git", "commit", "-m", msg], cwd=BACKUP_DIR,
+    subprocess.run(["git", "commit", "-m", msg], cwd=get_data_dir(),
                    capture_output=not state.debug, check=True)
 
 
 def do_push(state: RunState):
-    subprocess.run(["git", "push"], cwd=BACKUP_DIR,
+    subprocess.run(["git", "push"], cwd=get_data_dir(),
                    capture_output=not state.debug, check=True)
 
 

@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Backup, sync, and clean up Claude Code configuration"
 requires-python = ">=3.12"
 license = "MIT"
-dependencies = ["click>=8.0", "simple-term-menu>=1.6"]
+dependencies = ["click>=8.0", "platformdirs>=4.0", "simple-term-menu>=1.6"]
 
 [project.scripts]
 tidy-claude = "tidy_claude.cli:cli"
