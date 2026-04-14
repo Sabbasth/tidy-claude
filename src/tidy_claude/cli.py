@@ -52,6 +52,7 @@ def _print_summary(state: RunState, cmd: str):
 
 
 @click.group(invoke_without_command=True)
+@click.version_option(package_name="tidy-claude")
 @click.option("--debug", is_flag=True, help="Enable verbose output.")
 @click.pass_context
 def cli(ctx, debug):
