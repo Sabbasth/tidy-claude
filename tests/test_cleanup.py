@@ -60,6 +60,7 @@ class TestDoCleanup:
         assert res.deleted_files == 2
         assert not old_jsonl.exists()
         assert not old_session.exists()
+        assert not project.exists()
 
     def test_recent_files_kept(self, tmp_path: Path):
         claude_dir, project = _build_project(tmp_path)
@@ -89,9 +90,10 @@ class TestDoCleanup:
                          claude_dir=claude_dir)
 
         assert res.deleted_files == 1
-        assert res.deleted_dirs == 1
+        assert res.deleted_dirs == 2  # subagent dir + empty project dir
         assert not jsonl.exists()
         assert not (project / "conv-uuid").exists()
+        assert not project.exists()
 
     def test_dry_run_keeps_files(self, tmp_path: Path):
         claude_dir, project = _build_project(tmp_path)
@@ -116,7 +118,7 @@ class TestDoCleanup:
                          claude_dir=claude_dir)
 
         assert res.deleted_files == 0
-        assert res.deleted_dirs == 0
+        assert res.deleted_dirs == 1  # empty project dir removed
         assert res.freed_bytes == 0
 
     def test_older_than_zero_deletes_everything(self, tmp_path: Path):
@@ -154,4 +156,38 @@ class TestDoCleanup:
                    claude_dir=claude_dir)
 
         assert not a_file.exists()
+        assert not proj_a.exists()  # emptied → removed
         assert b_file.exists()  # untouched
+
+    def test_empty_project_dir_removed(self, tmp_path: Path):
+        claude_dir, project = _build_project(tmp_path)
+
+        old = project / "only.jsonl"
+        old.write_text("{}")
+        _make_old(old, days=30)
+
+        state = RunState()
+        res = do_cleanup(state, [project], older_than=7, dry_run=False,
+                         claude_dir=claude_dir)
+
+        assert res.deleted_files == 1
+        assert res.deleted_dirs == 1
+        assert not project.exists()
+
+    def test_non_empty_project_dir_kept(self, tmp_path: Path):
+        claude_dir, project = _build_project(tmp_path)
+
+        old = project / "old.jsonl"
+        old.write_text("{}")
+        _make_old(old, days=30)
+
+        recent = project / "recent.jsonl"
+        recent.write_text("{}")
+
+        state = RunState()
+        do_cleanup(state, [project], older_than=7, dry_run=False,
+                   claude_dir=claude_dir)
+
+        assert not old.exists()
+        assert project.exists()
+        assert recent.exists()

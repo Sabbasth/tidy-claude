@@ -1,4 +1,5 @@
 """Path constants and configuration keys."""
+# pylint: disable=global-statement
 
 import json
 from pathlib import Path
@@ -49,8 +50,8 @@ def ensure_config() -> dict:
 
 
 def get_data_dir() -> Path:
-    """Return the configured data directory (where backups live)."""
-    return Path(load_config()["data_dir"])
+    """Return the backup repo directory (``{data_dir}/backup``)."""
+    return Path(load_config()["data_dir"]) / "backup"
 
 
 # ── Claude Code paths ───────────────────────────────────────────────

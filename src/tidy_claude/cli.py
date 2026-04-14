@@ -60,34 +60,7 @@ def cli(ctx, debug):
     ctx.obj["state"] = RunState(debug=debug)
     ensure_config()
     if ctx.invoked_subcommand is None:
-        ctx.invoke(backup)
-
-
-@cli.command()
-@click.pass_context
-def backup(ctx):
-    """Copy config files to backup dir."""
-    state = ctx.obj["state"]
-    do_backup(state)
-    _print_summary(state, "backup")
-
-
-@cli.command()
-@click.pass_context
-def restore(ctx):
-    """Restore config from backup to live locations."""
-    state = ctx.obj["state"]
-    do_restore(state)
-    _print_summary(state, "restore")
-
-
-@cli.command()
-@click.pass_context
-def skills(ctx):
-    """Reinstall skills from skills.json manifest."""
-    state = ctx.obj["state"]
-    do_skills(state)
-    _print_summary(state, "skills")
+        ctx.invoke(sync_cmd)
 
 
 @cli.command()
@@ -96,21 +69,14 @@ def status():
     subprocess.run(["git", "status", "--short"], cwd=get_data_dir(), check=False)
 
 
-@cli.command()
-@click.pass_context
-def push(ctx):
-    """Backup + commit + push to remote."""
-    state = ctx.obj["state"]
-    do_backup(state)
-    do_commit(state)
-    do_push(state)
-    _print_summary(state, "push")
-
-
 @cli.command("sync")
 @click.pass_context
 def sync_cmd(ctx):
     """Full sync: pull + restore + skills + backup + push."""
+    cfg = load_config()
+    if not cfg.get("remote_backup"):
+        click.echo("No remote configured. Run: tidy-claude config --remote-backup <git-url>")
+        sys.exit(1)
     state = ctx.obj["state"]
     if not do_pull(state):
         sys.exit(1)
@@ -125,16 +91,36 @@ def sync_cmd(ctx):
 @cli.command()
 @click.option("--data-dir", type=click.Path(), default=None,
               help="Set the data directory for backups.")
-def init(data_dir):
+@click.option("--remote-backup", type=str, default=None,
+              help="Set the git remote URL for the backup repo.")
+def config(data_dir, remote_backup):
     """Show or update tidy-claude configuration."""
-    if data_dir is None:
+    if data_dir is None and remote_backup is None:
         click.echo(f"config: {CONFIG_FILE}")
         click.echo(json.dumps(load_config(), indent=2))
-    else:
-        config = load_config()
-        config["data_dir"] = str(Path(data_dir).expanduser().resolve())
-        save_config(config)
-        click.echo(f"data_dir set to {config['data_dir']}")
+        return
+
+    cfg = load_config()
+    if data_dir is not None:
+        cfg["data_dir"] = str(Path(data_dir).expanduser().resolve())
+        click.echo(f"data_dir set to {cfg['data_dir']}")
+    if remote_backup is not None:
+        cfg["remote_backup"] = remote_backup
+        data_path = Path(cfg["data_dir"])
+        backup_dir = data_path / "backup"
+        if not (backup_dir / ".git").exists():
+            data_path.mkdir(parents=True, exist_ok=True)
+            subprocess.run(
+                ["git", "clone", remote_backup, "backup"],
+                cwd=data_path, check=True, capture_output=True,
+            )
+        else:
+            subprocess.run(
+                ["git", "remote", "set-url", "origin", remote_backup],
+                cwd=backup_dir, check=True, capture_output=True,
+            )
+        click.echo(f"remote_backup set to {remote_backup}")
+    save_config(cfg)
 
 
 @cli.command()

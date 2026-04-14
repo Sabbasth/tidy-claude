@@ -124,7 +124,7 @@ def _merge_keys_from_file(state: RunState, backup_rel: str, target: Path,
 
 
 # ── public operations ────────────────────────────────────────────────
-
+# pylint: disable=missing-docstring
 def do_backup(state: RunState):
     for name in ("agents", "memory"):
         d = CLAUDE_DIR / name
@@ -178,14 +178,24 @@ def do_skills(state: RunState):
 
 
 def do_pull(state: RunState) -> bool:
+    data_dir = get_data_dir()
+    # Skip pull if the repo has no commits yet (fresh clone of empty remote)
+    head = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=data_dir, capture_output=True, check=False,
+    )
+    if head.returncode != 0:
+        state.log("No commits yet, skipping pull.")
+        return True
+
     result = subprocess.run(
         ["git", "pull", "--ff-only"],
-        cwd=get_data_dir(),
+        cwd=data_dir,
         capture_output=not state.debug,
         check=False,
     )
     if result.returncode != 0:
-        import click
+        import click  # pylint: disable=import-outside-toplevel
         click.echo("error: git pull --ff-only failed (history diverged?)")
         return False
     return True
@@ -209,7 +219,7 @@ def do_commit(state: RunState, message: str | None = None):
 
 
 def do_push(state: RunState):
-    subprocess.run(["git", "push"], cwd=get_data_dir(),
+    subprocess.run(["git", "push", "-u", "origin", "HEAD"], cwd=get_data_dir(),
                    capture_output=not state.debug, check=True)
 
 
@@ -283,7 +293,7 @@ def do_cleanup(
                     for f in subagent_dir.rglob("*") if f.is_file()
                 )
                 if dry_run:
-                    state.log(f"  would delete  {subagent_dir.relative_to(claude_dir)}/ ({format_size(dir_size)})")
+                    state.log(f"  would delete  {subagent_dir.relative_to(claude_dir)}/ ({format_size(dir_size)})") # pylint: disable=line-too-long
                 else:
                     shutil.rmtree(subagent_dir)
                 res.freed_bytes += dir_size
@@ -295,6 +305,14 @@ def do_cleanup(
                 jsonl.unlink()
             res.freed_bytes += size
             res.deleted_files += 1
+
+        # Remove project dir if empty after cleanup
+        if project_dir.exists() and not any(project_dir.iterdir()):
+            if dry_run:
+                state.log(f"  would delete  {project_dir.relative_to(claude_dir)}/")
+            else:
+                project_dir.rmdir()
+            res.deleted_dirs += 1
 
     # Session metadata (not project-specific)
     sessions_dir = claude_dir / "sessions"
