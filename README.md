@@ -11,7 +11,7 @@ Backup, sync, and clean up [Claude Code](https://claude.ai/code) configuration a
 ## Install
 
 ```bash
-uv tool install tidy-claude         # or: pipx install tidy-claude
+pipx install git+https://github.com/sabbasth/tidy-claude
 ```
 
 ## Usage
@@ -19,7 +19,6 @@ uv tool install tidy-claude         # or: pipx install tidy-claude
 ```bash
 tidy-claude                 # sync (default)
 tidy-claude sync            # pull + restore + skills + backup + push
-tidy-claude status          # git status of the config repo
 tidy-claude config          # show current configuration
 tidy-claude cleanup         # interactive project picker + delete old sessions
 ```
