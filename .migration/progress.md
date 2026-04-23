@@ -1,7 +1,7 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 3 — Terminée ✅ | Prochaine : Phase 4 (cli port)
+**Phase courante : 4 — Code terminé, stats en attente ⏳ | Prochaine : Phase 5 (parité e2e)
 **Dernier commit :** `migration(phase-3): port ops module`
 
 ## Checkpoints

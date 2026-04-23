@@ -28,6 +28,7 @@ predicates = "3.1"
 insta = { version = "1.38", features = ["json"] }
 tempfile = "3.10"
 filetime = "0.2"
+assert_cmd = "2.0"
 
 [profile.release]
 lto = true
