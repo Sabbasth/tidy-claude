@@ -1,8 +1,8 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 2 — Code terminé, stats en attente ⏳ | Prochaine : capture des stats phase 2
-**Dernier commit :** `migration(phase-1): cargo scaffolding`
+**Phase courante :** 2 — Terminée ✅ | Prochaine : Phase 3 (ops port)
+**Dernier commit :** `migration(phase-2): port config/state/helpers`
 
 ## Checkpoints
 
@@ -13,16 +13,16 @@
 - [x] Phase 2 code: config.rs, state.rs, helpers.rs portés
 - [x] cargo check passe
 - [x] cargo test passe (23 tests)
-- [ ] Stats phase 2 à recueillir auprès de l'utilisateur
-- [ ] Commit phase 2 final
+- [x] Stats phase 2 enregistrées (tokens_in=64.7k, tokens_out=44.6k, durée=9min, coût=$1)
+- [x] Commit phase 2 final
 
 ## Prochain tour
 
-1. Démarrer **Phase 2 — Port config/state/helpers** avec **GPT 5.4 mini**.
-2. Implémenter fully : `config.rs` (const, paths), `state.rs` (RunState), `helpers.rs` (pures functions).
-3. Tests unitaires Rust pour `helpers` (deep_merge, format_size, etc.) avec parité Python.
-4. `cargo test` doit passer.
-5. Demander stats utilisateur → commit `migration(phase-2): port config/state/helpers with tests`.
+1. Démarrer **Phase 3 — Port `ops.rs`** avec **Sonnet 4.6**.
+2. Porter le cœur métier : backup/restore, git, `npx skills`, cleanup.
+3. Écrire les tests d'intégration Rust correspondants.
+4. Valider `cargo test`.
+5. Demander stats utilisateur → commit `migration(phase-3): port ops module with integration tests`.
 
 ## Blockers
 

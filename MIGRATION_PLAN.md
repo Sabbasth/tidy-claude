@@ -172,19 +172,20 @@ Tarifs de référence (USD / 1M tokens, input / output) :
 |---|---|---:|---:|---:|---:|---:|---|
 | 0 — Plan & tracking | Sonnet 4.6 | 1 | n/a | 22 † | 8 900 | $0.00 ‡ | 🟢 terminé |
 | 1 — Scaffolding Cargo | Haiku 4.5 | 1 | 5 min | 396 | 24 500 | $0.10 § | 🟢 terminé |
-| 2 — config/state/helpers | GPT 5.4 mini | 1 | 0 min | _TBD_ | _TBD_ | _TBD_ | 🟡 en cours |
+| 2 — config/state/helpers | GPT 5.4 mini | 1 | 9 min | 64 700 | 44 600 | $1.00 §§ | 🟢 terminé |
 | 3 — ops | Sonnet 4.6 | — | — | — | — | — | ⚪ à faire |
 | 4 — cli | Sonnet 4.6 | — | — | — | — | — | ⚪ à faire |
 | 5 — parité e2e | Sonnet 4.6 | — | — | — | — | — | ⚪ à faire |
 | 6 — CI & release | Haiku 4.5 | — | — | — | — | — | ⚪ à faire |
 | 7 — audit & cleanup | Opus 4.7 + Haiku 4.5 | — | — | — | — | — | ⚪ à faire |
-| **CUMUL (0-1)** | | 2 | 5 min | 418 | 33 400 | $0.10 | |
+| **CUMUL (0-2)** | | 3 | 14 min | 65 118 | 78 000 | $1.10 | |
 
 Légende : ⚪ à faire · 🟡 en cours · 🟢 terminé · 🔴 bloqué
 
 † Phase 0: `tokens_in` = delta non-caché rapporté par pi-agent.
 ‡ Phase 0: Coût facturé $0 (plan d'abonnement). Prix catalogue Sonnet 4.6 : ~$0.13 (22×$3/1M + 8 900×$15/1M).
-§ Phase 1: Coüt rapporté $0, prix catalogue Haiku 4.5 : ~$0.10 (396×$0.80/1M + 24 500×$4/1M).
+§ Phase 1: Coût rapporté $0, prix catalogue Haiku 4.5 : ~$0.10 (396×$0.80/1M + 24 500×$4/1M).
+§§ Phase 2: coût rapporté $1.00, prix catalogue GPT 5.4 mini : ~$0.10 (64 700×$0.40/1M + 44 600×$1.60/1M).
 
 ---
 
