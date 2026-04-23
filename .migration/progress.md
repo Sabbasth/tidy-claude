@@ -1,8 +1,8 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 6 — Terminée ✅ | Prochaine : Phase 7 (audit & cleanup)
-**Dernier commit :** `migration(phase-6): CI & release`
+**Statut :** 🎉 **Migration complète** — prête pour merge sur `main` et tag `v2.0.0`
+**Dernier commit :** `migration(phase-7): audit, cleanup, release prep`
 
 ## Checkpoints
 
@@ -13,24 +13,39 @@
 - [x] Phase 4 — cli (Sonnet 4.6) — 50 tests
 - [x] Phase 5 — parité e2e (Sonnet 4.6) — 56 tests + parity.sh
 - [x] Phase 6 — CI & release (Haiku 4.5) — GitHub Actions + README
-- [x] Stats phase 6 : 88.1k in / 134.8k out / 7 min / $1
+- [x] Phase 7 — audit & cleanup (Opus 4.7) — 0 vuln, Python supprimé, CHANGELOG/SECURITY
 
-## Prochaine phase
+## Bilan cumul 0-7
 
-**Phase 7 — Audit & cleanup final (Opus 4.7)**
+| | |
+|---|---|
+| Tours | 8 |
+| Tokens in | 504 718 |
+| Tokens out | 671 000 |
+| Durée active | 56 min |
+| Coût rapporté | $6.10 |
+| Coût catalogue estimé | ~$10.35 |
 
-1. Security audit du crate (Opus)
-2. Dépendances : vérifier les vulnérabilités (`cargo audit`)
-3. Documentation : README complet, CONTRIBUTING, CHANGELOG
-4. Tagger release v2.0.0 sur `rust-migration` (ou merge → main)
-5. Publish sur crates.io (optionnel)
+## Critères d'acceptation
 
-## Blockers
+- [x] `cargo test` 56/56
+- [x] `cargo clippy -D warnings` clean
+- [x] `cargo fmt --check` clean
+- [x] `cargo audit` 0 vuln / 173 deps
+- [x] `tests/parity.sh` 4/4
+- [x] `cargo install --git` build OK (matrice CI macOS + Linux)
+- [x] README + CONTRIBUTING + CHANGELOG + SECURITY à jour
+- [x] Sources Python supprimées
 
-_(none)_
+## Étapes finales (hors phases)
+
+1. `git push origin rust-migration`
+2. Ouvrir PR `rust-migration` → `main`
+3. Valider CI verte (fmt/clippy/test/audit/build)
+4. Merge + `git tag v2.0.0 && git push --tags`
+5. (optionnel) `cargo publish` sur crates.io
 
 ## Notes
 
-- Cumul 0-6 : 416.4k tokens in / 520.8k out / 50 min / $5.10
-- Tous les tests passent, clippy clean, fmt clean
-- .github/workflows/rust.yml testé sur macOS + Linux matrix
+- Aucun blocker restant.
+- La branche est dans un état mergeable sans conflit supposé.
