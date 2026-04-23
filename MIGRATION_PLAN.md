@@ -175,10 +175,10 @@ Tarifs de référence (USD / 1M tokens, input / output) :
 | 2 — config/state/helpers | GPT 5.4 mini | 1 | 9 min | 64 700 | 44 600 | $1.00 §§ | 🟢 terminé |
 | 3 — ops | Sonnet 4.6 | 1 | 15 min | 87 700 | 82 600 | $1.00 ¶ | 🟢 terminé |
 | 4 — cli | Sonnet 4.6 | 1 | 6 min | 87 700 | 101 700 | $1.00 ¶¶ | 🟢 terminé |
-| 5 — parité e2e | Sonnet 4.6 | 1 | 8 min | 87 800 | 123 700 | $1.00 # | 🟢 terminé | |
-| 6 — CI | 6 — CI & release | Haiku 4.5 | — | — | — | — | — | ⚪ à faire release | Haiku 4.5 | 1 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | 🟡 en cours | |
+| 5 — parité e2e | Sonnet 4.6 | 1 | 8 min | 87 800 | 123 700 | $1.00 # | 🟢 terminé |
+| 6 — CI & release | Haiku 4.5 | 1 | 7 min | 88 100 | 134 800 | $1.00 § | 🟢 terminé |
 | 7 — audit & cleanup | Opus 4.7 + Haiku 4.5 | — | — | — | — | — | ⚪ à faire |
-| **CUMUL (0-5)** | | 6 | 43 min | 328 318 | 386 000 | $4.10 | |
+| **CUMUL (0-6)** | | 7 | 50 min | 416 418 | 520 800 | $5.10 | |
 
 Légende : ⚪ à faire · 🟡 en cours · 🟢 terminé · 🔴 bloqué
 
@@ -189,6 +189,7 @@ Légende : ⚪ à faire · 🟡 en cours · 🟢 terminé · 🔴 bloqué
 ¶ Phase 3: coût rapporté $1.00, prix catalogue Sonnet 4.6 : ~$1.50 (87 700×$3/1M + 82 600×$15/1M).
 ¶¶ Phase 4: coût rapporté $1.00, prix catalogue Sonnet 4.6 : ~$1.79 (87 700×$3/1M + 101 700×$15/1M).
 # Phase 5: coût rapporté $1.00, prix catalogue Sonnet 4.6 : ~$2.12 (87 800×$3/1M + 123 700×$15/1M).
+§ Phase 6: coût rapporté $1.00, prix catalogue Haiku 4.5 : ~$0.60 (88 100×$0.80/1M + 134 800×$4/1M).
 
 ---
 

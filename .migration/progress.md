@@ -1,8 +1,8 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 5 — Terminée ✅ | Prochaine : Phase 6 (CI & release)
-**Dernier commit :** `migration(phase-5): parity validation`
+**Phase courante :** 6 — Terminée ✅ | Prochaine : Phase 7 (audit & cleanup)
+**Dernier commit :** `migration(phase-6): CI & release`
 
 ## Checkpoints
 
@@ -12,16 +12,18 @@
 - [x] Phase 3 — ops (Sonnet 4.6) — 41 tests
 - [x] Phase 4 — cli (Sonnet 4.6) — 50 tests
 - [x] Phase 5 — parité e2e (Sonnet 4.6) — 56 tests + parity.sh
-- [x] Stats phase 5 : 87.8k in / 123.7k out / 8 min / $1
+- [x] Phase 6 — CI & release (Haiku 4.5) — GitHub Actions + README
+- [x] Stats phase 6 : 88.1k in / 134.8k out / 7 min / $1
 
 ## Prochaine phase
 
-**Phase 6 — CI & release (Haiku 4.5)**
+**Phase 7 — Audit & cleanup final (Opus 4.7)**
 
-1. `.github/workflows/rust.yml` : `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check`
-2. Matrix : macOS (apple-silicon) + Linux x86_64
-3. Badge README
-4. `cargo install` instructions dans README
+1. Security audit du crate (Opus)
+2. Dépendances : vérifier les vulnérabilités (`cargo audit`)
+3. Documentation : README complet, CONTRIBUTING, CHANGELOG
+4. Tagger release v2.0.0 sur `rust-migration` (ou merge → main)
+5. Publish sur crates.io (optionnel)
 
 ## Blockers
 
@@ -29,6 +31,6 @@ _(none)_
 
 ## Notes
 
-- Binaire Rust non installé globalement jusqu'à phase 7.
-- `serde_json` feature `preserve_order` active — diffs git stables.
-- Snapshot insta commitée : `tests/snapshots/`.
+- Cumul 0-6 : 416.4k tokens in / 520.8k out / 50 min / $5.10
+- Tous les tests passent, clippy clean, fmt clean
+- .github/workflows/rust.yml testé sur macOS + Linux matrix
