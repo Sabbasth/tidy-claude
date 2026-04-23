@@ -1,24 +1,26 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 0 — Terminée ✅ | Prochaine : Phase 1 (Scaffolding Cargo)
-**Dernier commit :** `migration(phase-0): bootstrap plan & tracking`
+**Phase courante :** 1 — Terminée ✅ | Prochaine : Phase 2 (config/state/helpers port)
+**Dernier commit :** `migration(phase-1): cargo scaffolding`
 
 ## Checkpoints
 
-- [x] Analyse code source Python
-- [x] Rédaction `MIGRATION_PLAN.md`
-- [x] Scaffolding suivi (`.migration/`)
-- [x] Création branche `rust-migration`
-- [x] Stats phase 0 consignées (tokens_in=22, tokens_out=8900, cost=$0)
-- [x] Commit phase 0
+- [x] Phase 0 terminée, commit aeca2b5
+- [x] Phase 1 scaffolding: Cargo.toml, src/ stubs, rustfmt.toml
+- [x] Cargo check passes
+- [x] Stats phase 1 enregistrées (tokens_in=396, tokens_out=24.5k, durée=5min)
+- [ ] Phase 2 : port config/state/helpers (GPT 5.4 mini)
+- [ ] Tests unitaires Rust pour helpers
+- [ ] Commit phase 2
 
 ## Prochain tour
 
-1. Démarrer **Phase 1 — Scaffolding Cargo** avec **Haiku 4.5**.
-2. Créer `Cargo.toml`, structure `src/` miroir, `rustfmt.toml`.
-3. Vérifier `cargo check` OK.
-4. Demander stats à l'utilisateur → commit `migration(phase-1): cargo scaffolding`.
+1. Démarrer **Phase 2 — Port config/state/helpers** avec **GPT 5.4 mini**.
+2. Implémenter fully : `config.rs` (const, paths), `state.rs` (RunState), `helpers.rs` (pures functions).
+3. Tests unitaires Rust pour `helpers` (deep_merge, format_size, etc.) avec parité Python.
+4. `cargo test` doit passer.
+5. Demander stats utilisateur → commit `migration(phase-2): port config/state/helpers with tests`.
 
 ## Blockers
 
