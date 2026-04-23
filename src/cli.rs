@@ -238,15 +238,25 @@ fn cmd_cleanup(
             .items(&items)
             .interact_opt()?;
 
+        // Clear the collapsed dialoguer line and confirm selection
+        println!();
         match chosen {
             None => {
                 println!("cleanup: cancelled");
                 return Ok(());
             }
-            Some(indices) => indices
-                .into_iter()
-                .map(|i| projects[i].path.clone())
-                .collect(),
+            Some(indices) => {
+                let paths: Vec<PathBuf> = indices
+                    .into_iter()
+                    .map(|i| projects[i].path.clone())
+                    .collect();
+                let names: Vec<&str> = paths
+                    .iter()
+                    .filter_map(|p| p.file_name()?.to_str())
+                    .collect();
+                println!("cleanup: cleaning {}", names.join(", "));
+                paths
+            }
         }
     };
 
@@ -264,22 +274,28 @@ fn cmd_cleanup(
     let verb = if dry_run { "would delete" } else { "deleted" };
     let mut parts = Vec::new();
     if res.deleted_files > 0 {
-        parts.push(format!("{} files", res.deleted_files));
+        let noun = if res.deleted_files == 1 {
+            "file"
+        } else {
+            "files"
+        };
+        parts.push(format!("{} {}", res.deleted_files, noun));
     }
     if res.deleted_dirs > 0 {
-        parts.push(format!("{} subagent dirs", res.deleted_dirs));
+        let noun = if res.deleted_dirs == 1 { "dir" } else { "dirs" };
+        parts.push(format!("{} subagent {}", res.deleted_dirs, noun));
     }
 
     if parts.is_empty() {
         let age = if older_than > 0 {
-            format!(" older than {older_than} days")
+            format!(" older than {} days", older_than)
         } else {
             String::new()
         };
         println!("cleanup: nothing to delete{age}");
     } else {
         println!(
-            "cleanup: {} {} | {} {}",
+            "cleanup: {} {} — {} {}",
             verb,
             parts.join(", "),
             prefix,
