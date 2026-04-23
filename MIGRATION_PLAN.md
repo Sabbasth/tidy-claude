@@ -42,6 +42,7 @@ Chaque phase se termine par **un commit** sur `rust-migration` avec un message `
 Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5** pour boilerplate/tests répétitifs, **Sonnet 4.6** pour logique métier non triviale, **Opus 4.7** uniquement pour revue de sécurité finale, **GPT 5.4 mini** pour ports mécaniques pur-fonction.
 
 ### Phase 0 — Cadrage & outillage de suivi _(cette requête)_
+
 - Analyse du code source existant
 - Plan de migration (ce document)
 - Workflow de suivi anti-compaction (`.migration/stats.jsonl`, `.migration/progress.md`)
@@ -51,6 +52,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-0): bootstrap plan & tracking`
 
 ### Phase 1 — Scaffolding Cargo
+
 - `Cargo.toml` (edition 2021, deps : clap, dialoguer, git2, serde, serde_json[preserve_order], anyhow, thiserror, directories)
 - Structure `src/` miroir : `config.rs`, `helpers.rs`, `ops.rs`, `cli.rs`, `state.rs`, `main.rs`, `lib.rs`
 - `rustfmt.toml`, `clippy` strict dans CI
@@ -59,6 +61,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-1): cargo scaffolding`
 
 ### Phase 2 — Port `config.rs` + `state.rs` + `helpers.rs`
+
 - Constantes (chemins, clés préservées) → `config.rs`
 - `RunState` → struct avec méthode `log(&self, msg: &str)` gardée par `debug: bool`
 - Fonctions pures (`deep_merge` sur `serde_json::Value`, `diff_files`, `extract_keys`, `pretty_project_name`, `format_size`, `resolve_claude_md`)
@@ -67,6 +70,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-2): port config/state/helpers with tests`
 
 ### Phase 3 — Port `ops.rs` (cœur métier)
+
 - Sous-modules : `ops/backup.rs`, `ops/restore.rs`, `ops/git.rs`, `ops/skills.rs`, `ops/cleanup.rs`
 - Git via `git2` (pull rebase, add, commit, push ; fallback shell-out si MFA/ssh-agent pose problème)
 - `npx skills add` via `std::process::Command`
@@ -75,6 +79,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-3): port ops module with integration tests`
 
 ### Phase 4 — Port `cli.rs`
+
 - `clap` derive avec sous-commandes `sync` (default), `config`, `cleanup`
 - Flag global `--debug`
 - `cleanup` : `dialoguer::MultiSelect` pour le picker projets, flags `--older-than`, `-a`, `--dry-run`
@@ -83,6 +88,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-4): port CLI with clap + dialoguer`
 
 ### Phase 5 — Parité end-to-end & golden tests
+
 - Script `tests/parity.sh` : exécute Python et Rust sur la même fixture, diff les outputs
 - Snapshots `insta` sur sorties structurées
 - Fix des divergences détectées
@@ -90,6 +96,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-5): parity validation`
 
 ### Phase 6 — CI & release
+
 - GitHub Actions : `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check`
 - Matrix build macOS + Linux
 - Badge README
@@ -97,6 +104,7 @@ Le choix de modèle privilégie le meilleur ratio qualité/tokens : **Haiku 4.5*
 - **Commit :** `migration(phase-6): rust CI pipeline`
 
 ### Phase 7 — Revue sécurité & suppression du Python
+
 - Audit : gestion des paths (traversal), permissions fichiers, secrets jamais loggés, appels subprocess
 - `cargo audit`, `cargo deny`
 - Suppression `src/tidy_claude/`, `tests/*.py`, `pyproject.toml`, `uv.lock`
@@ -138,6 +146,7 @@ Modèles non retenus :
 4. Mets à jour le tableau §5 ci-dessous avec les totaux de phase
 
 **Format `.migration/stats.jsonl`** (une ligne par tour) :
+
 ```json
 {"ts":"2026-04-23T15:10:00Z","phase":0,"turn":1,"model":"sonnet-4.6","duration_s":null,"tokens_in":null,"tokens_out":null,"cost_usd":null,"source":"pending","summary":"build migration plan + tracking scaffolding"}
 ```
