@@ -32,7 +32,7 @@ cargo audit                                 # security advisories
 
 ## Project structure
 
-```
+```shell
 src/
   config.rs    # Paths, config file loading, constants
   helpers.rs   # Pure functions (no side effects)

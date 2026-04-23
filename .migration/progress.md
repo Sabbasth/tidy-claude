@@ -14,6 +14,7 @@
 - [x] Phase 5 — parité e2e (Sonnet 4.6) — 56 tests + parity.sh
 - [x] Phase 6 — CI & release (Haiku 4.5) — GitHub Actions + README
 - [x] Phase 7 — audit & cleanup (Opus 4.7) — 0 vuln, Python supprimé, CHANGELOG/SECURITY
+- [x] Manual Phase - Some supplementary fixes the AI missed
 
 ## Bilan cumul 0-7 (corrigé)
 
@@ -21,9 +22,10 @@
 |---|---|
 | Tours | 8 |
 | Tokens in (snapshot final) | 88 300 |
-| Tokens out (cumul session réel) | 158 100 |
+| Tokens out (cumul session réel) | 175 300 |
 | Δ out réel codé | 150 200 (phases 0-7) |
 | Durée active | 56 min |
+| Durée totale | 1H15 |
 | Coût rapporté | ~$7 (abonnement) |
 
 > **Note méthodologie** : les valeurs token relevées à chaque phase étaient des
