@@ -235,28 +235,19 @@ fn cmd_cleanup(
 
         let chosen = MultiSelect::new()
             .with_prompt("Select projects to clean (space = toggle, enter = confirm)")
+            .report(false)
             .items(&items)
             .interact_opt()?;
 
-        // Clear the collapsed dialoguer line and confirm selection
-        println!();
         match chosen {
             None => {
                 println!("cleanup: cancelled");
                 return Ok(());
             }
-            Some(indices) => {
-                let paths: Vec<PathBuf> = indices
-                    .into_iter()
-                    .map(|i| projects[i].path.clone())
-                    .collect();
-                let names: Vec<&str> = paths
-                    .iter()
-                    .filter_map(|p| p.file_name()?.to_str())
-                    .collect();
-                println!("cleanup: cleaning {}", names.join(", "));
-                paths
-            }
+            Some(indices) => indices
+                .into_iter()
+                .map(|i| projects[i].path.clone())
+                .collect(),
         }
     };
 
