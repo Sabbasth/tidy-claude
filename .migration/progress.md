@@ -1,8 +1,8 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 2 — Terminée ✅ | Prochaine : Phase 3 (ops port)
-**Dernier commit :** `migration(phase-2): port config/state/helpers`
+**Phase courante :** 3 — Code terminé, stats en attente ⏳ | Prochaine : Phase 4 (cli port)
+**Dernier commit :** `migration(phase-3): port ops module`
 
 ## Checkpoints
 
@@ -10,19 +10,16 @@
 - [x] Phase 1 scaffolding: Cargo.toml, src/ stubs, rustfmt.toml
 - [x] Cargo check passes
 - [x] Stats phase 1 enregistrées (tokens_in=396, tokens_out=24.5k, durée=5min)
-- [x] Phase 2 code: config.rs, state.rs, helpers.rs portés
-- [x] cargo check passe
-- [x] cargo test passe (23 tests)
-- [x] Stats phase 2 enregistrées (tokens_in=64.7k, tokens_out=44.6k, durée=9min, coût=$1)
-- [x] Commit phase 2 final
+- [x] Phase 3 code: ops.rs porté (backup, restore, git, skills, cleanup)
+- [x] cargo test passe (41 tests : 23 helpers + 18 ops/cleanup)
+- [ ] Stats phase 3 à recueillir
+- [ ] Commit phase 3
 
 ## Prochain tour
 
-1. Démarrer **Phase 3 — Port `ops.rs`** avec **Sonnet 4.6**.
-2. Porter le cœur métier : backup/restore, git, `npx skills`, cleanup.
-3. Écrire les tests d'intégration Rust correspondants.
-4. Valider `cargo test`.
-5. Demander stats utilisateur → commit `migration(phase-3): port ops module with integration tests`.
+1. Recueillir les stats phase 3 de l'utilisateur.
+2. Commit `migration(phase-3): port ops module`.
+3. Démarrer **Phase 4 — Port `cli.rs`** avec **Sonnet 4.6**.
 
 ## Blockers
 
