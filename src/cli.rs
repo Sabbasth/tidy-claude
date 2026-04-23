@@ -90,7 +90,13 @@ pub fn run() -> Result<()> {
             all_projects,
             dry_run,
             with_named_sessions,
-        } => cmd_cleanup(&state, older_than, all_projects, dry_run, with_named_sessions),
+        } => cmd_cleanup(
+            &state,
+            older_than,
+            all_projects,
+            dry_run,
+            with_named_sessions,
+        ),
     }
 }
 
@@ -111,9 +117,9 @@ fn cmd_sync(state: &RunState) -> Result<()> {
     if !do_pull(state, &backup_dir)? {
         process::exit(1);
     }
-    do_restore(state, &backup_dir, &*CLAUDE_DIR)?;
+    do_restore(state, &backup_dir, &CLAUDE_DIR)?;
     do_skills(state, &backup_dir)?;
-    do_backup(state, &backup_dir, &*CLAUDE_DIR)?;
+    do_backup(state, &backup_dir, &CLAUDE_DIR)?;
     do_commit(state, &backup_dir, None)?;
     do_push(state, &backup_dir)?;
     println!("sync: up to date");
@@ -165,10 +171,7 @@ fn cmd_config(args: ConfigArgs) -> Result<()> {
                 .output()
                 .context("git clone failed")?;
             if !out.status.success() {
-                anyhow::bail!(
-                    "git clone failed: {}",
-                    String::from_utf8_lossy(&out.stderr)
-                );
+                anyhow::bail!("git clone failed: {}", String::from_utf8_lossy(&out.stderr));
             }
         } else {
             let out = std::process::Command::new("git")
@@ -213,7 +216,11 @@ fn cmd_cleanup(
         if !std::io::stdin().is_terminal() {
             anyhow::bail!("interactive mode requires a TTY; use --all");
         }
-        let max_name = projects.iter().map(|p| p.display_name.len()).max().unwrap_or(0);
+        let max_name = projects
+            .iter()
+            .map(|p| p.display_name.len())
+            .max()
+            .unwrap_or(0);
         let items: Vec<String> = projects
             .iter()
             .map(|p| {
@@ -236,12 +243,22 @@ fn cmd_cleanup(
                 println!("cleanup: cancelled");
                 return Ok(());
             }
-            Some(indices) => indices.into_iter().map(|i| projects[i].path.clone()).collect(),
+            Some(indices) => indices
+                .into_iter()
+                .map(|i| projects[i].path.clone())
+                .collect(),
         }
     };
 
     let path_refs: Vec<&std::path::Path> = selected_paths.iter().map(|p| p.as_path()).collect();
-    let res = do_cleanup(state, &path_refs, older_than, dry_run, &CLAUDE_DIR, with_named_sessions)?;
+    let res = do_cleanup(
+        state,
+        &path_refs,
+        older_than,
+        dry_run,
+        &CLAUDE_DIR,
+        with_named_sessions,
+    )?;
 
     let prefix = if dry_run { "would free" } else { "freed" };
     let verb = if dry_run { "would delete" } else { "deleted" };

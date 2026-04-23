@@ -25,7 +25,8 @@ pub fn diff_files(src: &Path, dst: &Path) -> usize {
             }
         }
         changed
-    } else if !dst.exists() || fs::read(src).expect("read src") != fs::read(dst).unwrap_or_default() {
+    } else if !dst.exists() || fs::read(src).expect("read src") != fs::read(dst).unwrap_or_default()
+    {
         1
     } else {
         0
@@ -104,7 +105,7 @@ pub fn format_size(n_bytes: u64) -> String {
 }
 
 pub fn pretty_project_name(dirname: &str, home: &Path) -> String {
-    let home_prefix = home.to_string_lossy().replace('/', "-").replace('.', "-");
+    let home_prefix = home.to_string_lossy().replace(['/', '.'], "-");
     if dirname == home_prefix {
         return "~".to_string();
     }
@@ -167,7 +168,10 @@ mod tests {
     fn deep_merge_nested_dict() {
         let mut base = json!({"a": {"x": 1, "y": 2}});
         let overlay = json!({"a": {"y": 3, "z": 4}});
-        assert_eq!(deep_merge(&mut base, &overlay), json!({"a": {"x": 1, "y": 3, "z": 4}}));
+        assert_eq!(
+            deep_merge(&mut base, &overlay),
+            json!({"a": {"x": 1, "y": 3, "z": 4}})
+        );
     }
 
     #[test]
@@ -268,7 +272,10 @@ mod tests {
         fs::write(dir.path().join("CLAUDE.md"), "hello @tips.md @missing.md").unwrap();
         fs::write(dir.path().join("tips.md"), "tip").unwrap();
         let result = resolve_claude_md(dir.path());
-        let names: Vec<_> = result.iter().map(|p| p.file_name().unwrap().to_string_lossy().to_string()).collect();
+        let names: Vec<_> = result
+            .iter()
+            .map(|p| p.file_name().unwrap().to_string_lossy().to_string())
+            .collect();
         assert!(names.contains(&"CLAUDE.md".to_string()));
         assert!(names.contains(&"tips.md".to_string()));
         assert!(!names.contains(&"missing.md".to_string()));
@@ -280,24 +287,42 @@ mod tests {
         fs::write(dir.path().join("CLAUDE.md"), "no references here\n").unwrap();
         let result = resolve_claude_md(dir.path());
         assert_eq!(result.len(), 1);
-        assert_eq!(result[0].file_name().unwrap().to_string_lossy(), "CLAUDE.md");
+        assert_eq!(
+            result[0].file_name().unwrap().to_string_lossy(),
+            "CLAUDE.md"
+        );
     }
 
     #[test]
     fn pretty_project_name_cases() {
         let home = Path::new("/Users/alice");
         assert_eq!(pretty_project_name("-Users-alice", home), "~");
-        assert_eq!(pretty_project_name("-Users-alice-src-github-com-acme-widgets", home), "acme/widgets");
-        assert_eq!(pretty_project_name("-Users-alice-src-github-com-acme-my-cool-repo", home), "acme/my-cool-repo");
-        assert_eq!(pretty_project_name("-Users-alice--config", home), "~/.config");
-        assert_eq!(pretty_project_name("-Users-alice-projects", home), "~/projects");
+        assert_eq!(
+            pretty_project_name("-Users-alice-src-github-com-acme-widgets", home),
+            "acme/widgets"
+        );
+        assert_eq!(
+            pretty_project_name("-Users-alice-src-github-com-acme-my-cool-repo", home),
+            "acme/my-cool-repo"
+        );
+        assert_eq!(
+            pretty_project_name("-Users-alice--config", home),
+            "~/.config"
+        );
+        assert_eq!(
+            pretty_project_name("-Users-alice-projects", home),
+            "~/projects"
+        );
         assert_eq!(pretty_project_name("-other-path", home), "-other-path");
     }
 
     #[test]
     fn extract_keys_subset() {
         let data = json!({"a": 1, "b": 2, "c": 3});
-        assert_eq!(extract_keys(&data, &["a", "c"], None), json!({"a": 1, "c": 3}));
+        assert_eq!(
+            extract_keys(&data, &["a", "c"], None),
+            json!({"a": 1, "c": 3})
+        );
     }
 
     #[test]
@@ -310,7 +335,10 @@ mod tests {
     fn extract_keys_with_defaults() {
         let data = json!({"a": 1});
         let defaults = json!({"d": 42});
-        assert_eq!(extract_keys(&data, &["a"], Some(&defaults)), json!({"a": 1, "d": 42}));
+        assert_eq!(
+            extract_keys(&data, &["a"], Some(&defaults)),
+            json!({"a": 1, "d": 42})
+        );
     }
 
     #[test]
@@ -324,6 +352,9 @@ mod tests {
     fn merge_keys_data_with_overlap() {
         let backed_up = json!({"a": {"x": 1}});
         let current = json!({"a": {"y": 2}, "b": 3});
-        assert_eq!(merge_keys_data(&backed_up, &current), json!({"a": {"x": 1, "y": 2}, "b": 3}));
+        assert_eq!(
+            merge_keys_data(&backed_up, &current),
+            json!({"a": {"x": 1, "y": 2}, "b": 3})
+        );
     }
 }

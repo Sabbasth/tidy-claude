@@ -83,7 +83,11 @@ fn restore_copy(state: &RunState, src: &Path, target: &Path) -> Result<()> {
     } else {
         fs::copy(src, target)
             .with_context(|| format!("restore {} -> {}", src.display(), target.display()))?;
-        state.log(&format!("  restore  {} -> {}", src.display(), target.display()));
+        state.log(&format!(
+            "  restore  {} -> {}",
+            src.display(),
+            target.display()
+        ));
     }
     Ok(())
 }
@@ -99,8 +103,7 @@ fn extract_keys_to_file(
         state.log(&format!("  skip  {} (not found)", src.display()));
         return Ok(());
     }
-    let text = fs::read_to_string(src)
-        .with_context(|| format!("read {}", src.display()))?;
+    let text = fs::read_to_string(src).with_context(|| format!("read {}", src.display()))?;
     let data: Value =
         serde_json::from_str(&text).with_context(|| format!("parse {}", src.display()))?;
     let extracted = extract_keys(&data, keys, defaults);
@@ -209,12 +212,7 @@ pub fn do_restore(state: &RunState, backup_dir: &Path, claude_dir: &Path) -> Res
     if backup_claude.exists() {
         let mut mds: Vec<_> = fs::read_dir(&backup_claude)?
             .filter_map(Result::ok)
-            .filter(|e| {
-                e.path()
-                    .extension()
-                    .and_then(|x| x.to_str())
-                    == Some("md")
-            })
+            .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("md"))
             .collect();
         mds.sort_by_key(|e| e.file_name());
         for entry in mds {
@@ -226,11 +224,7 @@ pub fn do_restore(state: &RunState, backup_dir: &Path, claude_dir: &Path) -> Res
             )?;
         }
     }
-    merge_keys_from_file(
-        state,
-        &backup_dir.join("claude/claude.json"),
-        &claude_json,
-    )?;
+    merge_keys_from_file(state, &backup_dir.join("claude/claude.json"), &claude_json)?;
     merge_keys_from_file(
         state,
         &backup_dir.join("claude/settings.json"),
@@ -291,10 +285,7 @@ pub fn do_commit(state: &RunState, repo_dir: &Path, message: Option<&str>) -> Re
 pub fn do_push(state: &RunState, repo_dir: &Path) -> Result<()> {
     let out = git_cmd(state, &["push", "-u", "origin", "HEAD"], repo_dir);
     if !out.status.success() {
-        anyhow::bail!(
-            "git push failed: {}",
-            String::from_utf8_lossy(&out.stderr)
-        );
+        anyhow::bail!("git push failed: {}", String::from_utf8_lossy(&out.stderr));
     }
     Ok(())
 }
@@ -370,12 +361,7 @@ pub fn collect_projects(projects_dir: &Path) -> Vec<ProjectInfo> {
             let session_count = fs::read_dir(&path)
                 .map(|rd| {
                     rd.filter_map(Result::ok)
-                        .filter(|f| {
-                            f.path()
-                                .extension()
-                                .and_then(|x| x.to_str())
-                                == Some("jsonl")
-                        })
+                        .filter(|f| f.path().extension().and_then(|x| x.to_str()) == Some("jsonl"))
                         .count()
                 })
                 .unwrap_or(0);
@@ -386,8 +372,7 @@ pub fn collect_projects(projects_dir: &Path) -> Vec<ProjectInfo> {
                 .filter_map(|f| f.metadata().ok())
                 .map(|m| m.len())
                 .sum();
-            let display_name =
-                crate::helpers::pretty_project_name(&dirname, &crate::config::HOME);
+            let display_name = crate::helpers::pretty_project_name(&dirname, &crate::config::HOME);
             ProjectInfo {
                 dirname,
                 path,
@@ -466,9 +451,7 @@ fn named_sessions(claude_dir: &Path, project_paths: &[&Path]) -> HashMap<String,
                 for line in text.lines() {
                     if let Ok(entry) = serde_json::from_str::<Value>(line) {
                         if entry.get("type").and_then(Value::as_str) == Some("custom-title") {
-                            if let Some(title) =
-                                entry.get("customTitle").and_then(Value::as_str)
-                            {
+                            if let Some(title) = entry.get("customTitle").and_then(Value::as_str) {
                                 result.insert(stem.clone(), title.to_string());
                                 break;
                             }
@@ -515,12 +498,7 @@ pub fn do_cleanup(
 
         let mut jsonl_files: Vec<_> = fs::read_dir(project_dir)?
             .filter_map(Result::ok)
-            .filter(|e| {
-                e.path()
-                    .extension()
-                    .and_then(|x| x.to_str())
-                    == Some("jsonl")
-            })
+            .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("jsonl"))
             .collect();
         jsonl_files.sort_by_key(|e| e.file_name());
 
@@ -572,10 +550,7 @@ pub fn do_cleanup(
             if dry_run {
                 state.log(&format!(
                     "  would delete  {} ({})",
-                    jsonl
-                        .strip_prefix(claude_dir)
-                        .unwrap_or(&jsonl)
-                        .display(),
+                    jsonl.strip_prefix(claude_dir).unwrap_or(&jsonl).display(),
                     format_size(size)
                 ));
             } else {
@@ -607,12 +582,7 @@ pub fn do_cleanup(
     if sessions_dir.exists() {
         let mut session_files: Vec<_> = fs::read_dir(&sessions_dir)?
             .filter_map(Result::ok)
-            .filter(|e| {
-                e.path()
-                    .extension()
-                    .and_then(|x| x.to_str())
-                    == Some("json")
-            })
+            .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("json"))
             .collect();
         session_files.sort_by_key(|e| e.file_name());
 
@@ -628,10 +598,7 @@ pub fn do_cleanup(
                     .and_then(Value::as_str)
                     .filter(|s| !s.is_empty())
                 {
-                    let stem = sf
-                        .file_stem()
-                        .and_then(|s| s.to_str())
-                        .unwrap_or("");
+                    let stem = sf.file_stem().and_then(|s| s.to_str()).unwrap_or("");
                     state.log(&format!("  skip  {} ({})", stem, name));
                     continue;
                 }
@@ -752,15 +719,7 @@ mod tests {
         make_old(&old_session, 30);
 
         let state = RunState::new(true);
-        let res = do_cleanup(
-            &state,
-            &[project.as_path()],
-            7,
-            false,
-            &claude_dir,
-            false,
-        )
-        .unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 2);
         assert!(!old_jsonl.exists());
@@ -776,8 +735,7 @@ mod tests {
         fs::write(&recent, "{}").unwrap();
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 0);
         assert!(recent.exists());
@@ -796,8 +754,7 @@ mod tests {
         make_old(&jsonl, 30);
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert_eq!(res.deleted_dirs, 2); // subagent dir + empty project dir
@@ -815,8 +772,7 @@ mod tests {
         make_old(&jsonl, 30);
 
         let state = RunState::new(true);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, true, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, true, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert!(res.freed_bytes > 0);
@@ -829,8 +785,7 @@ mod tests {
         let (claude_dir, project) = build_project(dir.path(), "some-project");
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 0);
         assert_eq!(res.deleted_dirs, 1); // empty project dir removed
@@ -845,8 +800,7 @@ mod tests {
         fs::write(&recent, "{}").unwrap();
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 0, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 0, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert!(!recent.exists());
@@ -887,8 +841,7 @@ mod tests {
         make_old(&old, 30);
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert_eq!(res.deleted_dirs, 1);
@@ -925,8 +878,7 @@ mod tests {
         make_old(&jsonl, 30);
 
         let state = RunState::new(true);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 0);
         assert!(jsonl.exists());
@@ -942,8 +894,7 @@ mod tests {
         make_old(&jsonl, 30);
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, true).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, true).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert!(!jsonl.exists());
@@ -964,8 +915,7 @@ mod tests {
         make_old(&unnamed_jsonl, 30);
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert!(named_jsonl.exists());
@@ -1008,9 +958,7 @@ mod tests {
         let jsonl = project.join(format!("{sid}.jsonl"));
         let lines = [
             r#"{"type":"user","message":"hello"}"#,
-            &format!(
-                r#"{{"type":"custom-title","customTitle":"My Title","sessionId":"{sid}"}}"#
-            ),
+            &format!(r#"{{"type":"custom-title","customTitle":"My Title","sessionId":"{sid}"}}"#),
         ]
         .join("\n")
             + "\n";
@@ -1018,8 +966,7 @@ mod tests {
         make_old(&jsonl, 30);
 
         let state = RunState::new(true);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, false).unwrap();
 
         assert_eq!(res.deleted_files, 0);
         assert!(jsonl.exists());
@@ -1038,8 +985,7 @@ mod tests {
         make_old(&jsonl, 30);
 
         let state = RunState::new(false);
-        let res =
-            do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, true).unwrap();
+        let res = do_cleanup(&state, &[project.as_path()], 7, false, &claude_dir, true).unwrap();
 
         assert_eq!(res.deleted_files, 1);
         assert!(!jsonl.exists());

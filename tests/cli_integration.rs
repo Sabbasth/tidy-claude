@@ -8,7 +8,6 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
-use assert_cmd::Command as AssertCommand;
 use predicates::prelude::*;
 use tempfile::TempDir;
 
@@ -49,7 +48,10 @@ fn tidy(config_dir: &Path) -> assert_cmd::Command {
 fn config_shows_current_config() {
     let tmp = TempDir::new().unwrap();
     let config_dir = tmp.path().join("cfg");
-    setup_config(&config_dir, &serde_json::json!({"data_dir": "/tmp/backups"}));
+    setup_config(
+        &config_dir,
+        &serde_json::json!({"data_dir": "/tmp/backups"}),
+    );
 
     tidy(&config_dir)
         .arg("config")
@@ -97,10 +99,8 @@ fn config_set_remote_backup() {
         )));
 
     // Config file on disk must contain the new remote
-    let saved: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(config_dir.join("config.json")).unwrap(),
-    )
-    .unwrap();
+    let saved: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(config_dir.join("config.json")).unwrap()).unwrap();
     assert_eq!(saved["remote_backup"].as_str().unwrap(), remote_url);
     assert_eq!(
         saved["data_dir"].as_str().unwrap(),
@@ -152,10 +152,8 @@ fn config_set_data_dir_and_remote_together() {
         .stdout(predicate::str::contains("data_dir set to"))
         .stdout(predicate::str::contains("remote_backup set to"));
 
-    let saved: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(config_dir.join("config.json")).unwrap(),
-    )
-    .unwrap();
+    let saved: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(config_dir.join("config.json")).unwrap()).unwrap();
     assert_eq!(saved["remote_backup"].as_str().unwrap(), remote_url);
     assert!(new_data_dir.join("backup").join(".git").is_dir());
 }
@@ -204,10 +202,8 @@ fn config_overwrite_existing_remote() {
         .assert()
         .success();
 
-    let saved: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(config_dir.join("config.json")).unwrap(),
-    )
-    .unwrap();
+    let saved: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(config_dir.join("config.json")).unwrap()).unwrap();
     assert_eq!(saved["remote_backup"].as_str().unwrap(), new_remote);
 }
 

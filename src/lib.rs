@@ -6,11 +6,11 @@
 //! - Clean up old conversation logs and session files
 //! - Sync everything in one command
 
+pub mod cli;
 pub mod config;
 pub mod helpers;
-pub mod state;
 pub mod ops;
-pub mod cli;
+pub mod state;
 
 pub use config::RunConfig;
 pub use state::RunState;

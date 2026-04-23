@@ -56,7 +56,8 @@ pub static CLAUDE_JSON: Lazy<PathBuf> = Lazy::new(|| HOME.join(".claude.json"));
 pub static SETTINGS_JSON: Lazy<PathBuf> = Lazy::new(|| CLAUDE_DIR.join("settings.json"));
 
 pub const CLAUDE_JSON_KEYS: &[&str] = &["mcpServers"];
-pub const SETTINGS_JSON_KEYS: &[&str] = &["permissions", "enabledPlugins", "extraKnownMarketplaces"];
+pub const SETTINGS_JSON_KEYS: &[&str] =
+    &["permissions", "enabledPlugins", "extraKnownMarketplaces"];
 
 pub static SETTINGS_JSON_DEFAULTS: Lazy<Value> = Lazy::new(|| {
     json!({
@@ -64,9 +65,8 @@ pub static SETTINGS_JSON_DEFAULTS: Lazy<Value> = Lazy::new(|| {
     })
 });
 
-pub static CATEGORY_MAP: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
-    HashMap::from([("agents", "agents"), ("memory", "memories")])
-});
+pub static CATEGORY_MAP: Lazy<HashMap<&'static str, &'static str>> =
+    Lazy::new(|| HashMap::from([("agents", "agents"), ("memory", "memories")]));
 
 fn default_config() -> Value {
     json!({"data_dir": default_data_dir().to_string_lossy().to_string()})
@@ -126,12 +126,7 @@ pub fn reset_config_cache() {
     *cache().lock().expect("config cache poisoned") = None;
 }
 
+#[derive(Default)]
 pub struct RunConfig {
     pub debug: bool,
-}
-
-impl Default for RunConfig {
-    fn default() -> Self {
-        Self { debug: false }
-    }
 }

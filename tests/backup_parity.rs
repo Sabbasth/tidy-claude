@@ -26,11 +26,7 @@ fn build_fixture(tmp: &TempDir) -> (std::path::PathBuf, std::path::PathBuf) {
 
     // Core markdown files
     fs::create_dir_all(&claude_dir).unwrap();
-    fs::write(
-        claude_dir.join("CLAUDE.md"),
-        "# Instructions\n@tips.md\n",
-    )
-    .unwrap();
+    fs::write(claude_dir.join("CLAUDE.md"), "# Instructions\n@tips.md\n").unwrap();
     fs::write(claude_dir.join("tips.md"), "some tips\n").unwrap();
 
     // memory/
@@ -112,10 +108,9 @@ fn backup_filters_settings_json_keys() {
     let state = RunState::new(false);
     do_backup(&state, &backup_dir, &claude_dir).unwrap();
 
-    let saved: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(backup_dir.join("claude/settings.json")).unwrap(),
-    )
-    .unwrap();
+    let saved: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(backup_dir.join("claude/settings.json")).unwrap())
+            .unwrap();
 
     // Expected keys present
     assert!(
@@ -153,10 +148,9 @@ fn backup_filters_claude_json_keys() {
     let state = RunState::new(false);
     do_backup(&state, &backup_dir, &claude_dir).unwrap();
 
-    let saved: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(backup_dir.join("claude/claude.json")).unwrap(),
-    )
-    .unwrap();
+    let saved: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(backup_dir.join("claude/claude.json")).unwrap())
+            .unwrap();
 
     assert!(
         saved.get("mcpServers").is_some(),
@@ -211,18 +205,16 @@ fn backup_restore_round_trip() {
     );
 
     // settings.json restored with only backed-up keys merged in
-    let restored_settings: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(restore_claude.join("settings.json")).unwrap(),
-    )
-    .unwrap();
+    let restored_settings: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(restore_claude.join("settings.json")).unwrap())
+            .unwrap();
     assert!(restored_settings.get("permissions").is_some());
     assert!(restored_settings.get("enabledPlugins").is_some());
 
     // .claude.json restored
-    let restored_claude_json: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(restore_home.join(".claude.json")).unwrap(),
-    )
-    .unwrap();
+    let restored_claude_json: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(restore_home.join(".claude.json")).unwrap())
+            .unwrap();
     assert!(restored_claude_json.get("mcpServers").is_some());
 }
 
@@ -254,10 +246,9 @@ fn restore_deep_merges_into_existing_settings() {
 
     do_restore(&state, &backup_dir, &restore_claude).unwrap();
 
-    let merged: serde_json::Value = serde_json::from_str(
-        &fs::read_to_string(restore_claude.join("settings.json")).unwrap(),
-    )
-    .unwrap();
+    let merged: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(restore_claude.join("settings.json")).unwrap())
+            .unwrap();
 
     // Backed-up permissions should be merged in
     assert!(

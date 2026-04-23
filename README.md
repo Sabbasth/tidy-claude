@@ -1,5 +1,7 @@
 # tidy-claude
 
+[![Rust CI](https://github.com/sabbasth/tidy-claude/actions/workflows/rust.yml/badge.svg?branch=rust-migration)](https://github.com/sabbasth/tidy-claude/actions/workflows/rust.yml)
+
 Backup, sync, and clean up [Claude Code](https://claude.ai/code) configuration across machines.
 
 ## Features
@@ -9,6 +11,14 @@ Backup, sync, and clean up [Claude Code](https://claude.ai/code) configuration a
 - **Sync** everything in one command: pull, restore, install skills, backup, push
 
 ## Install
+
+### Rust (Recommended — currently on `rust-migration` branch)
+
+```bash
+cargo install --git https://github.com/sabbasth/tidy-claude --branch rust-migration
+```
+
+### Python (Legacy)
 
 ```bash
 pipx install git+https://github.com/sabbasth/tidy-claude
