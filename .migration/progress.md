@@ -15,16 +15,20 @@
 - [x] Phase 6 — CI & release (Haiku 4.5) — GitHub Actions + README
 - [x] Phase 7 — audit & cleanup (Opus 4.7) — 0 vuln, Python supprimé, CHANGELOG/SECURITY
 
-## Bilan cumul 0-7
+## Bilan cumul 0-7 (corrigé)
 
 | | |
 |---|---|
 | Tours | 8 |
-| Tokens in | 504 718 |
-| Tokens out | 671 000 |
+| Tokens in (snapshot final) | 88 300 |
+| Tokens out (cumul session réel) | 158 100 |
+| Δ out réel codé | 150 200 (phases 0-7) |
 | Durée active | 56 min |
-| Coût rapporté | $6.10 |
-| Coût catalogue estimé | ~$10.35 |
+| Coût rapporté | ~$7 (abonnement) |
+
+> **Note méthodologie** : les valeurs token relevées à chaque phase étaient des
+> **compteurs cumulatifs de session** pi-agent (non remis à zéro). Les totaux
+> précédemment calculés par addition étaient donc faux (double cumul).
 
 ## Critères d'acceptation
 

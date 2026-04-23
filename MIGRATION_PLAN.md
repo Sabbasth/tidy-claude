@@ -168,21 +168,21 @@ Tarifs de référence (USD / 1M tokens, input / output) :
 | GPT 5.4 mini | $0.40 | $1.60 |
 | Gemini 3.1 pro | $1.25 | $5 |
 
-| Phase | Modèle principal | Tours | Temps cumulé | Tokens in | Tokens out | Coût (USD) | Statut |
-|---|---|---:|---:|---:|---:|---:|---|
-| 0 — Plan & tracking | Sonnet 4.6 | 1 | n/a | 22 † | 8 900 | $0.00 ‡ | 🟢 terminé |
-| 1 — Scaffolding Cargo | Haiku 4.5 | 1 | 5 min | 396 | 24 500 | $0.10 § | 🟢 terminé |
-| 2 — config/state/helpers | GPT 5.4 mini | 1 | 9 min | 64 700 | 44 600 | $1.00 §§ | 🟢 terminé |
-| 3 — ops | Sonnet 4.6 | 1 | 15 min | 87 700 | 82 600 | $1.00 ¶ | 🟢 terminé |
-| 4 — cli | Sonnet 4.6 | 1 | 6 min | 87 700 | 101 700 | $1.00 ¶¶ | 🟢 terminé |
-| 5 — parité e2e | Sonnet 4.6 | 1 | 8 min | 87 800 | 123 700 | $1.00 # | 🟢 terminé |
-| 6 — CI & release | Haiku 4.5 | 1 | 7 min | 88 100 | 134 800 | $1.00 § | 🟢 terminé |
-| 7 — audit & cleanup | Opus 4.7 | 1 | 6 min | 88 300 | 150 200 | $1.00 †† | 🟢 terminé |
-| **CUMUL (0-7)** | | 8 | 56 min | 504 718 | 671 000 | $6.10 | |
+| Phase | Modèle principal | Tours | Temps | Snapshot in ††† | Snapshot out ††† | Δ out réel | Coût (USD) | Statut |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| 0 — Plan & tracking | Sonnet 4.6 | 1 | n/a | 22 | 8 900 | 8 900 | $0.00 ‡ | 🟢 terminé |
+| 1 — Scaffolding Cargo | Haiku 4.5 | 1 | 5 min | 396 | 24 500 | 15 600 | $0.10 § | 🟢 terminé |
+| 2 — config/state/helpers | GPT 5.4 mini | 1 | 9 min | 64 700 | 44 600 | 20 100 | $1.00 §§ | 🟢 terminé |
+| 3 — ops | Sonnet 4.6 | 1 | 15 min | 87 700 | 82 600 | 38 000 | $1.00 ¶ | 🟢 terminé |
+| 4 — cli | Sonnet 4.6 | 1 | 6 min | 87 700 | 101 700 | 19 100 | $1.00 ¶¶ | 🟢 terminé |
+| 5 — parité e2e | Sonnet 4.6 | 1 | 8 min | 87 800 | 123 700 | 22 000 | $1.00 # | 🟢 terminé |
+| 6 — CI & release | Haiku 4.5 | 1 | 7 min | 88 100 | 134 800 | 11 100 | $1.00 | 🟢 terminé |
+| 7 — audit & cleanup | Opus 4.7 | 1 | 6 min | 88 300 | 150 200 | 15 400 | $1.00 | 🟢 terminé |
+| **CUMUL réel** | | 8 | 56 min | **88 300** ††† | **158 100** ††† | **150 200** | ~$7 | |
 
 Légende : ⚪ à faire · 🟡 en cours · 🟢 terminé · 🔴 bloqué
 
-† Phase 0: `tokens_in` = delta non-caché rapporté par pi-agent.
+††† **Méthodologie des tokens** : pi-agent affiche des **compteurs cumulatifs de session** non remis à zéro entre les phases ni au changement de modèle. Les colonnes "Snapshot in/out" sont les valeurs brutes relevées à la fin de chaque phase. Le Δ out réel = snapshot_out(n) − snapshot_out(n−1). La colonne in stagne après compaction (contexte stabilisé à ~88k). Le CUMUL affiche les vraies valeurs finales de session (158 100 out inclut ce tour de correction).
 ‡ Phase 0: Coût facturé $0 (plan d'abonnement). Prix catalogue Sonnet 4.6 : ~$0.13 (22×$3/1M + 8 900×$15/1M).
 § Phase 1: Coût rapporté $0, prix catalogue Haiku 4.5 : ~$0.10 (396×$0.80/1M + 24 500×$4/1M).
 §§ Phase 2: coût rapporté $1.00, prix catalogue GPT 5.4 mini : ~$0.10 (64 700×$0.40/1M + 44 600×$1.60/1M).
