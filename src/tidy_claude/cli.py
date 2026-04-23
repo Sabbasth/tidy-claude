@@ -131,8 +131,10 @@ def config(data_dir, remote_backup):
               help="Clean all projects without interactive selection.")
 @click.option("--dry-run", is_flag=True,
               help="Show what would be deleted without deleting.")
+@click.option("--with-named-sessions", is_flag=True,
+              help="Include named sessions in cleanup (excluded by default).")
 @click.pass_context
-def cleanup(ctx, older_than, all_projects, dry_run):
+def cleanup(ctx, older_than, all_projects, dry_run, with_named_sessions):
     """Remove old Claude session and conversation files.
 
     By default, shows an interactive menu to select projects.
@@ -172,7 +174,8 @@ def cleanup(ctx, older_than, all_projects, dry_run):
         selected = [projects[i] for i in indices]
 
     project_paths = [p.path for p in selected]
-    res = do_cleanup(state, project_paths, older_than, dry_run)
+    res = do_cleanup(state, project_paths, older_than, dry_run,
+                     with_named_sessions=with_named_sessions)
 
     prefix = "would free" if dry_run else "freed"
     verb = "would delete" if dry_run else "deleted"

@@ -1,5 +1,6 @@
 """Tests for the cleanup operation."""
 
+import json
 import os
 import time
 from pathlib import Path
@@ -191,3 +192,135 @@ class TestDoCleanup:
         assert not old.exists()
         assert project.exists()
         assert recent.exists()
+
+
+class TestNamedSessions:
+    @staticmethod
+    def _add_session_meta(claude_dir, session_id, name=None):
+        """Write a session metadata JSON file."""
+        sessions_dir = claude_dir / "sessions"
+        sessions_dir.mkdir(parents=True, exist_ok=True)
+        meta = {"pid": 1, "sessionId": session_id}
+        if name:
+            meta["name"] = name
+        (sessions_dir / "1.json").write_text(json.dumps(meta))
+
+    def test_named_session_skipped_by_default(self, tmp_path):
+        claude_dir, project = _build_project(tmp_path)
+        sid = "abc-named"
+        self._add_session_meta(claude_dir, sid, name="my session")
+
+        jsonl = project / f"{sid}.jsonl"
+        jsonl.write_text("{}")
+        _make_old(jsonl, days=30)
+
+        state = RunState(debug=True)
+        res = do_cleanup(state, [project], older_than=7, dry_run=False,
+                         claude_dir=claude_dir)
+
+        assert res.deleted_files == 0
+        assert jsonl.exists()
+
+    def test_named_session_deleted_with_flag(self, tmp_path):
+        claude_dir, project = _build_project(tmp_path)
+        sid = "abc-named"
+        self._add_session_meta(claude_dir, sid, name="my session")
+
+        jsonl = project / f"{sid}.jsonl"
+        jsonl.write_text("{}")
+        _make_old(jsonl, days=30)
+
+        state = RunState()
+        res = do_cleanup(state, [project], older_than=7, dry_run=False,
+                         claude_dir=claude_dir, with_named_sessions=True)
+
+        assert res.deleted_files == 1
+        assert not jsonl.exists()
+
+    def test_unnamed_session_still_deleted(self, tmp_path):
+        claude_dir, project = _build_project(tmp_path)
+        named_sid = "abc-named"
+        unnamed_sid = "def-unnamed"
+        self._add_session_meta(claude_dir, named_sid, name="kept")
+
+        named_jsonl = project / f"{named_sid}.jsonl"
+        named_jsonl.write_text("{}")
+        _make_old(named_jsonl, days=30)
+
+        unnamed_jsonl = project / f"{unnamed_sid}.jsonl"
+        unnamed_jsonl.write_text("{}")
+        _make_old(unnamed_jsonl, days=30)
+
+        state = RunState()
+        res = do_cleanup(state, [project], older_than=7, dry_run=False,
+                         claude_dir=claude_dir)
+
+        assert res.deleted_files == 1
+        assert named_jsonl.exists()
+        assert not unnamed_jsonl.exists()
+
+    def test_named_session_metadata_preserved(self, tmp_path):
+        claude_dir, project = _build_project(tmp_path)
+        sid = "abc-named"
+        self._add_session_meta(claude_dir, sid, name="important")
+
+        session_meta = claude_dir / "sessions" / "1.json"
+        _make_old(session_meta, days=30)
+
+        state = RunState()
+        do_cleanup(state, [project], older_than=7, dry_run=False,
+                   claude_dir=claude_dir)
+
+        assert session_meta.exists()
+
+    def test_named_session_metadata_deleted_with_flag(self, tmp_path):
+        claude_dir, project = _build_project(tmp_path)
+        sid = "abc-named"
+        self._add_session_meta(claude_dir, sid, name="important")
+
+        session_meta = claude_dir / "sessions" / "1.json"
+        _make_old(session_meta, days=30)
+
+        state = RunState()
+        do_cleanup(state, [project], older_than=7, dry_run=False,
+                   claude_dir=claude_dir, with_named_sessions=True)
+
+        assert not session_meta.exists()
+
+    def test_named_via_jsonl_fallback(self, tmp_path):
+        """Session named in .jsonl but without sessions/ metadata is still protected."""
+        claude_dir, project = _build_project(tmp_path)
+        sid = "abc-named-in-jsonl"
+
+        jsonl = project / f"{sid}.jsonl"
+        lines = [
+            json.dumps({"type": "user", "message": "hello"}),
+            json.dumps({"type": "custom-title", "customTitle": "My Title", "sessionId": sid}),
+        ]
+        jsonl.write_text("\n".join(lines) + "\n")
+        _make_old(jsonl, days=30)
+
+        state = RunState(debug=True)
+        res = do_cleanup(state, [project], older_than=7, dry_run=False,
+                         claude_dir=claude_dir)
+
+        assert res.deleted_files == 0
+        assert jsonl.exists()
+
+    def test_named_via_jsonl_deleted_with_flag(self, tmp_path):
+        claude_dir, project = _build_project(tmp_path)
+        sid = "abc-named-in-jsonl"
+
+        jsonl = project / f"{sid}.jsonl"
+        lines = [
+            json.dumps({"type": "custom-title", "customTitle": "My Title", "sessionId": sid}),
+        ]
+        jsonl.write_text("\n".join(lines) + "\n")
+        _make_old(jsonl, days=30)
+
+        state = RunState()
+        res = do_cleanup(state, [project], older_than=7, dry_run=False,
+                         claude_dir=claude_dir, with_named_sessions=True)
+
+        assert res.deleted_files == 1
+        assert not jsonl.exists()

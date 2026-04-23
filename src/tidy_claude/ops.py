@@ -264,24 +264,68 @@ class CleanupResult:
     freed_bytes: int = 0
 
 
+def _named_sessions(claude_dir: Path, project_paths: list[Path]) -> dict[str, str]:
+    """Return a mapping of session ID → name for sessions with a user-given name.
+
+    Reads from ``sessions/*.json`` metadata first, then falls back to
+    scanning ``custom-title`` entries inside ``.jsonl`` files.
+    """
+    result: dict[str, str] = {}
+
+    # Pass 1: session metadata (fast, small files)
+    sessions_dir = claude_dir / "sessions"
+    if sessions_dir.exists():
+        for sf in sessions_dir.glob("*.json"):
+            try:
+                data = json.loads(sf.read_text())
+            except (json.JSONDecodeError, OSError):
+                continue
+            if data.get("name"):
+                result[data["sessionId"]] = data["name"]
+
+    # Pass 2: scan .jsonl files not already known
+    for project_dir in project_paths:
+        if not project_dir.exists():
+            continue
+        for jsonl in project_dir.glob("*.jsonl"):
+            if jsonl.stem in result:
+                continue
+            try:
+                for line in jsonl.open():
+                    entry = json.loads(line)
+                    if isinstance(entry, dict) and entry.get("type") == "custom-title":
+                        result[jsonl.stem] = entry["customTitle"]
+                        break
+            except (json.JSONDecodeError, OSError):
+                continue
+
+    return result
+
+
 def do_cleanup(
     state: RunState,
     project_paths: list[Path],
     older_than: int,
     dry_run: bool,
     claude_dir: Path = CLAUDE_DIR,
+    with_named_sessions: bool = False,
 ) -> CleanupResult:
     """Delete sessions in *project_paths* older than *older_than* days.
 
     Also cleans stale session metadata in ``claude_dir/sessions/``.
+    Named sessions are skipped unless *with_named_sessions* is True.
     """
     cutoff = time.time() - (older_than * 86400) if older_than > 0 else float("inf")
+    named = {} if with_named_sessions else _named_sessions(claude_dir, project_paths)
     res = CleanupResult()
 
     for project_dir in project_paths:
         if not project_dir.exists():
             continue
         for jsonl in sorted(project_dir.glob("*.jsonl")):
+            if jsonl.stem in named:
+                state.log(f"  skip  {jsonl.stem} ({named[jsonl.stem]})")
+                continue
             if older_than > 0 and jsonl.stat().st_mtime >= cutoff:
                 continue
 
@@ -318,6 +362,14 @@ def do_cleanup(
     sessions_dir = claude_dir / "sessions"
     if sessions_dir.exists():
         for sf in sorted(sessions_dir.glob("*.json")):
+            if not with_named_sessions:
+                try:
+                    data = json.loads(sf.read_text())
+                except (json.JSONDecodeError, OSError):
+                    data = {}
+                if data.get("name"):
+                    state.log(f"  skip  {sf.stem} ({data['name']})")
+                    continue
             if older_than > 0 and sf.stat().st_mtime >= cutoff:
                 continue
             size = sf.stat().st_size
