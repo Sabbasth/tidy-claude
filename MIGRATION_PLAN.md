@@ -172,7 +172,7 @@ Tarifs de référence (USD / 1M tokens, input / output) :
 |---|---|---:|---:|---:|---:|---:|---|
 | 0 — Plan & tracking | Sonnet 4.6 | 1 | n/a | 22 † | 8 900 | $0.00 ‡ | 🟢 terminé |
 | 1 — Scaffolding Cargo | Haiku 4.5 | 1 | 5 min | 396 | 24 500 | $0.10 § | 🟢 terminé |
-| 2 — config/state/helpers | GPT 5.4 mini | — | — | — | — | — | ⚪ à faire |
+| 2 — config/state/helpers | GPT 5.4 mini | 1 | 0 min | _TBD_ | _TBD_ | _TBD_ | 🟡 en cours |
 | 3 — ops | Sonnet 4.6 | — | — | — | — | — | ⚪ à faire |
 | 4 — cli | Sonnet 4.6 | — | — | — | — | — | ⚪ à faire |
 | 5 — parité e2e | Sonnet 4.6 | — | — | — | — | — | ⚪ à faire |

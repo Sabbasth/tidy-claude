@@ -1,7 +1,7 @@
 # Progress — Rust migration
 
 **Branche :** `rust-migration`
-**Phase courante :** 1 — Terminée ✅ | Prochaine : Phase 2 (config/state/helpers port)
+**Phase courante :** 2 — Code terminé, stats en attente ⏳ | Prochaine : capture des stats phase 2
 **Dernier commit :** `migration(phase-1): cargo scaffolding`
 
 ## Checkpoints
@@ -10,9 +10,11 @@
 - [x] Phase 1 scaffolding: Cargo.toml, src/ stubs, rustfmt.toml
 - [x] Cargo check passes
 - [x] Stats phase 1 enregistrées (tokens_in=396, tokens_out=24.5k, durée=5min)
-- [ ] Phase 2 : port config/state/helpers (GPT 5.4 mini)
-- [ ] Tests unitaires Rust pour helpers
-- [ ] Commit phase 2
+- [x] Phase 2 code: config.rs, state.rs, helpers.rs portés
+- [x] cargo check passe
+- [x] cargo test passe (23 tests)
+- [ ] Stats phase 2 à recueillir auprès de l'utilisateur
+- [ ] Commit phase 2 final
 
 ## Prochain tour
 
