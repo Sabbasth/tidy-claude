@@ -8,7 +8,7 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
-use assert_cmd::prelude::*;
+use assert_cmd::Command as AssertCommand;
 use predicates::prelude::*;
 use tempfile::TempDir;
 

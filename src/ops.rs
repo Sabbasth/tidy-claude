@@ -10,8 +10,7 @@ use anyhow::{Context, Result};
 use serde_json::{Map, Value};
 
 use crate::config::{
-    get_data_dir, CLAUDE_DIR, CLAUDE_JSON, CLAUDE_JSON_KEYS, SETTINGS_JSON,
-    SETTINGS_JSON_DEFAULTS, SETTINGS_JSON_KEYS,
+    get_data_dir, CLAUDE_DIR, CLAUDE_JSON_KEYS, SETTINGS_JSON_DEFAULTS, SETTINGS_JSON_KEYS,
 };
 use crate::helpers::{deep_merge, extract_keys, format_size, resolve_claude_md};
 use crate::state::RunState;
@@ -156,8 +155,13 @@ fn merge_keys_from_file(state: &RunState, src: &Path, target: &Path) -> Result<(
 
 // ── backup / restore ──────────────────────────────────────────────────────────
 
-pub fn do_backup(state: &RunState, backup_dir: &Path) -> Result<()> {
-    let claude_dir = &*CLAUDE_DIR;
+pub fn do_backup(state: &RunState, backup_dir: &Path, claude_dir: &Path) -> Result<()> {
+    let claude_json = claude_dir
+        .parent()
+        .expect("claude_dir has no parent")
+        .join(".claude.json");
+    let settings_json = claude_dir.join("settings.json");
+
     for name in ["agents", "memory"] {
         let src = claude_dir.join(name);
         if src.exists() {
@@ -172,14 +176,14 @@ pub fn do_backup(state: &RunState, backup_dir: &Path) -> Result<()> {
     }
     extract_keys_to_file(
         state,
-        &CLAUDE_JSON,
+        &claude_json,
         CLAUDE_JSON_KEYS,
         &backup_dir.join("claude/claude.json"),
         None,
     )?;
     extract_keys_to_file(
         state,
-        &SETTINGS_JSON,
+        &settings_json,
         SETTINGS_JSON_KEYS,
         &backup_dir.join("claude/settings.json"),
         Some(&*SETTINGS_JSON_DEFAULTS),
@@ -187,8 +191,13 @@ pub fn do_backup(state: &RunState, backup_dir: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn do_restore(state: &RunState, backup_dir: &Path) -> Result<()> {
-    let claude_dir = &*CLAUDE_DIR;
+pub fn do_restore(state: &RunState, backup_dir: &Path, claude_dir: &Path) -> Result<()> {
+    let claude_json = claude_dir
+        .parent()
+        .expect("claude_dir has no parent")
+        .join(".claude.json");
+    let settings_json = claude_dir.join("settings.json");
+
     for name in ["agents", "memory"] {
         restore_copy(
             state,
@@ -220,12 +229,12 @@ pub fn do_restore(state: &RunState, backup_dir: &Path) -> Result<()> {
     merge_keys_from_file(
         state,
         &backup_dir.join("claude/claude.json"),
-        &CLAUDE_JSON,
+        &claude_json,
     )?;
     merge_keys_from_file(
         state,
         &backup_dir.join("claude/settings.json"),
-        &SETTINGS_JSON,
+        &settings_json,
     )?;
     Ok(())
 }
@@ -655,9 +664,9 @@ pub fn do_sync(state: &RunState) -> Result<()> {
     if !do_pull(state, &backup_dir)? {
         anyhow::bail!("sync aborted: git pull --ff-only failed");
     }
-    do_restore(state, &backup_dir)?;
+    do_restore(state, &backup_dir, &CLAUDE_DIR)?;
     do_skills(state, &backup_dir)?;
-    do_backup(state, &backup_dir)?;
+    do_backup(state, &backup_dir, &CLAUDE_DIR)?;
     do_commit(state, &backup_dir, None)?;
     do_push(state, &backup_dir)?;
     Ok(())

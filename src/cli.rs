@@ -111,9 +111,9 @@ fn cmd_sync(state: &RunState) -> Result<()> {
     if !do_pull(state, &backup_dir)? {
         process::exit(1);
     }
-    do_restore(state, &backup_dir)?;
+    do_restore(state, &backup_dir, &*CLAUDE_DIR)?;
     do_skills(state, &backup_dir)?;
-    do_backup(state, &backup_dir)?;
+    do_backup(state, &backup_dir, &*CLAUDE_DIR)?;
     do_commit(state, &backup_dir, None)?;
     do_push(state, &backup_dir)?;
     println!("sync: up to date");

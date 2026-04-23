@@ -1,0 +1,12 @@
+---
+source: tests/backup_parity.rs
+expression: files
+---
+[
+    "claude/CLAUDE.md",
+    "claude/agents/my-agent.md",
+    "claude/claude.json",
+    "claude/memory/MEMORY.md",
+    "claude/settings.json",
+    "claude/tips.md",
+]
