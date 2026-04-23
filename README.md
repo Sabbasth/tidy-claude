@@ -1,6 +1,6 @@
 # tidy-claude
 
-[![Rust CI](https://github.com/sabbasth/tidy-claude/actions/workflows/rust.yml/badge.svg?branch=rust-migration)](https://github.com/sabbasth/tidy-claude/actions/workflows/rust.yml)
+[![Rust CI](https://github.com/sabbasth/tidy-claude/actions/workflows/rust.yml/badge.svg)](https://github.com/sabbasth/tidy-claude/actions/workflows/rust.yml)
 
 Backup, sync, and clean up [Claude Code](https://claude.ai/code) configuration across machines.
 
@@ -12,17 +12,15 @@ Backup, sync, and clean up [Claude Code](https://claude.ai/code) configuration a
 
 ## Install
 
-### Rust (Recommended — currently on `rust-migration` branch)
-
 ```bash
-cargo install --git https://github.com/sabbasth/tidy-claude --branch rust-migration
+cargo install --git https://github.com/sabbasth/tidy-claude
 ```
 
-### Python (Legacy)
+Requires Rust **1.70+** (install via [rustup](https://rustup.rs) if needed).
 
-```bash
-pipx install git+https://github.com/sabbasth/tidy-claude
-```
+> Upgrading from 1.x (Python)? `pipx uninstall tidy-claude` first, then run the
+> command above. Your backup repo and `config.json` are byte-compatible and
+> need no migration.
 
 ## Usage
 
@@ -60,6 +58,10 @@ tidy-claude cleanup -a --dry-run           # preview what would be deleted acros
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for the threat model and disclosure policy.
 
 ## License
 

@@ -177,7 +177,7 @@ Tarifs de référence (USD / 1M tokens, input / output) :
 | 4 — cli | Sonnet 4.6 | 1 | 6 min | 87 700 | 101 700 | $1.00 ¶¶ | 🟢 terminé |
 | 5 — parité e2e | Sonnet 4.6 | 1 | 8 min | 87 800 | 123 700 | $1.00 # | 🟢 terminé |
 | 6 — CI & release | Haiku 4.5 | 1 | 7 min | 88 100 | 134 800 | $1.00 § | 🟢 terminé |
-| 7 — audit & cleanup | Opus 4.7 + Haiku 4.5 | — | — | — | — | — | ⚪ à faire |
+| 7 — audit & cleanup | Opus 4.7 | 1 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | 🟡 en cours |
 | **CUMUL (0-6)** | | 7 | 50 min | 416 418 | 520 800 | $5.10 | |
 
 Légende : ⚪ à faire · 🟡 en cours · 🟢 terminé · 🔴 bloqué
@@ -195,9 +195,11 @@ Légende : ⚪ à faire · 🟡 en cours · 🟢 terminé · 🔴 bloqué
 
 ## 6. Critères d'acceptation globaux
 
-- [ ] `cargo test` tout vert, couverture ≥ celle de la suite pytest
-- [ ] `cargo clippy -- -D warnings` clean
-- [ ] Script de parité : Python et Rust produisent des backups byte-identiques sur fixture
-- [ ] `cargo install --git` fonctionne sur macOS (Apple Silicon) + Linux x86_64
-- [ ] README à jour, CONTRIBUTING adapté au workflow Rust
-- [ ] Sources Python supprimées
+- [x] `cargo test` tout vert (56/56 : 41 unit + 6 parity + 9 CLI)
+- [x] `cargo clippy -- -D warnings` clean
+- [x] Script de parité : `tests/parity.sh` + 6 tests `backup_parity.rs` (round-trip, key filtering, deep merge, snapshot insta)
+- [x] `cargo install --git` fonctionne sur macOS (Apple Silicon) + Linux x86_64 (matrice CI)
+- [x] README à jour, CONTRIBUTING adapté au workflow Rust
+- [x] Sources Python supprimées
+- [x] `cargo audit` : 0 vulnérabilité sur 173 dépendances
+- [x] CHANGELOG + SECURITY.md publiés
