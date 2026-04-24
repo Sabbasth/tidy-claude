@@ -1,0 +1,82 @@
+{
+  "phases": {
+    "phase_0": {
+      "name": "Planification & analyse",
+      "status": "completed",
+      "model_recommended": "Sonnet 4.6",
+      "model_used": "Opus 4.6",
+      "tokens_input": 55000, "tokens_output": 10000, "tokens_total": 65000,
+      "cost_estimated_usd": 1.58, "time_spent_minutes": 5
+    },
+    "phase_1": {
+      "name": "Scaffolding du projet Rust",
+      "status": "completed",
+      "model_recommended": "Haiku 4.5",
+      "model_used": "Opus 4.6",
+      "tokens_input": 20000, "tokens_output": 6000, "tokens_total": 26000,
+      "cost_estimated_usd": 0.75, "time_spent_minutes": 4
+    },
+    "phase_2": {
+      "name": "Types de base, config et erreurs",
+      "status": "completed",
+      "model_recommended": "Haiku 4.5",
+      "model_used": "Opus 4.6",
+      "tokens_input": 25000, "tokens_output": 8000, "tokens_total": 33000,
+      "cost_estimated_usd": 0.68, "time_spent_minutes": 4
+    },
+    "phase_3": {
+      "name": "Fonctions pures (helpers)",
+      "status": "completed",
+      "model_recommended": "Haiku 4.5",
+      "model_used": "Opus 4.6",
+      "tokens_input": 30000, "tokens_output": 12000, "tokens_total": 42000,
+      "cost_estimated_usd": 0.65, "time_spent_minutes": 4
+    },
+    "phase_4": {
+      "name": "Opérations filesystem et git",
+      "status": "completed",
+      "model_recommended": "Sonnet 4.6",
+      "model_used": "Opus 4.6",
+      "tokens_input": 60000, "tokens_output": 25000, "tokens_total": 85000,
+      "cost_estimated_usd": 2.78, "time_spent_minutes": 8
+    },
+    "phase_5": {
+      "name": "Couche CLI (clap + dialoguer)",
+      "status": "completed",
+      "model_recommended": "Sonnet 4.6",
+      "model_used": "Opus 4.6",
+      "tokens_input": 50000, "tokens_output": 12000, "tokens_total": 62000,
+      "cost_estimated_usd": 1.65, "time_spent_minutes": 5
+    },
+    "phase_6": {
+      "name": "Tests d'intégration et validation",
+      "status": "completed",
+      "model_recommended": "Sonnet 4.6",
+      "model_used": "Opus 4.6",
+      "tokens_input": 35000, "tokens_output": 8000, "tokens_total": 43000,
+      "cost_estimated_usd": 1.13, "time_spent_minutes": 4
+    },
+    "phase_7": {
+      "name": "Packaging, CI/CD et finalisation",
+      "status": "completed",
+      "model_recommended": "Haiku 4.5",
+      "model_used": "Opus 4.6",
+      "tokens_input": 20000, "tokens_output": 8000, "tokens_total": 28000,
+      "cost_estimated_usd": 0.90, "time_spent_minutes": 4
+    }
+  },
+  "totals": {
+    "tokens_input": 295000,
+    "tokens_output": 89000,
+    "tokens_total": 384000,
+    "cost_estimated_usd": 10.12,
+    "cost_optimal_usd": 1.77,
+    "time_total_minutes": 38
+  },
+  "pricing_reference": {
+    "claude_opus_4.7": { "input_per_1m": 15.00, "output_per_1m": 75.00 },
+    "claude_opus_4.6": { "input_per_1m": 15.00, "output_per_1m": 75.00 },
+    "claude_sonnet_4.6": { "input_per_1m": 3.00, "output_per_1m": 15.00 },
+    "claude_haiku_4.5": { "input_per_1m": 0.80, "output_per_1m": 4.00 }
+  }
+}

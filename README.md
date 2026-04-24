@@ -10,8 +10,14 @@ Backup, sync, and clean up [Claude Code](https://claude.ai/code) configuration a
 
 ## Install
 
+### From release (recommended)
+
+Download the latest binary for your platform from the [releases page](https://github.com/sabbasth/tidy-claude/releases) and place it in your `$PATH`.
+
+### From source
+
 ```bash
-pipx install git+https://github.com/sabbasth/tidy-claude
+cargo install --git https://github.com/sabbasth/tidy-claude
 ```
 
 ## Usage

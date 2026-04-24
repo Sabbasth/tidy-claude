@@ -15,21 +15,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - run: uv sync --group dev
-      - run: uv run pytest -v
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --verbose
 
   build:
     needs: test
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: tidy-claude-linux-amd64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: tidy-claude-macos-arm64
+          - os: macos-13
+            target: x86_64-apple-darwin
+            artifact: tidy-claude-macos-amd64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
-      - run: uv build
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release --target ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist/
+          name: ${{ matrix.artifact }}
+          path: target/${{ matrix.target }}/release/tidy-claude
 
   release:
     needs: build
@@ -40,9 +55,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: dist/
+          path: artifacts/
       - uses: softprops/action-gh-release@v2
         with:
-          files: dist/*
+          files: artifacts/**/*
           generate_release_notes: true
