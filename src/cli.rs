@@ -253,10 +253,13 @@ fn cmd_cleanup(
         let chosen = MultiSelect::new()
             .with_prompt("Select projects to clean (space = toggle, enter = confirm)")
             .items(&entries)
+            .report(false)
             .interact_opt();
 
         match chosen {
             Ok(Some(indices)) if !indices.is_empty() => {
+                let names: Vec<_> = indices.iter().map(|&i| projects[i].display_name.as_str()).collect();
+                println!("selected: {}", names.join(", "));
                 indices.iter().map(|&i| projects[i].path.clone()).collect()
             }
             _ => {
